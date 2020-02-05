@@ -3,7 +3,8 @@ const Schema = mongoose.Schema;
 
 // discriminator looks at type to know what type of excercise
 var options = {
-  discriminatorKey: "type"
+  discriminatorKey: "type",
+  _id: false
 };
 
 var ExerciseSchema = new mongoose.Schema(
@@ -15,14 +16,19 @@ var ExerciseSchema = new mongoose.Schema(
   options
 );
 
-var Exercise = mongoose.model("Exercise", ExerciseSchema);
+const WorkoutSchema = new Schema({
+  day: Date,
+  exercises: [ExerciseSchema]
+});
 
-var CardioExercise = Exercise.discriminator(
+const WorkoutExercises = WorkoutSchema.path("exercises");
+
+var CardioExercise = WorkoutExercises.discriminator(
   "cardio",
-  new mongoose.Schema({ distance: Number }, options)
+  new mongoose.Schema({ distance: Number }, { _id: false })
 );
 
-var ResistanceExercise = Exercise.discriminator(
+var ResistanceExercise = WorkoutExercises.discriminator(
   "resistance",
   new mongoose.Schema(
     {
@@ -30,13 +36,14 @@ var ResistanceExercise = Exercise.discriminator(
       reps: Number,
       sets: Number
     },
-    options
+    { _id: false }
   )
 );
 
+const Workout = mongoose.model("Workout", WorkoutSchema);
+
 module.exports = {
-  Exercise: Exercise,
-  ExerciseSchema: ExerciseSchema,
+  Workout: Workout,
   CardioExercise: CardioExercise,
   ResistanceExercise: ResistanceExercise
 };
