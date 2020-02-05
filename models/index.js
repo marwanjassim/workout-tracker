@@ -21,6 +21,7 @@ const WorkoutSchema = new Schema({
   exercises: [ExerciseSchema]
 });
 
+// Add discriminator to exercises in workout schema
 const WorkoutExercises = WorkoutSchema.path("exercises");
 
 var CardioExercise = WorkoutExercises.discriminator(

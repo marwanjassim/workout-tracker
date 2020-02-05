@@ -30,9 +30,7 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", {
 // GET /api/workouts: get all workouts
 app.get("/api/workouts", (req, res) => {
   db.Workout.find({})
-    .exec()
     .then(dbWorkout => {
-      console.log(dbWorkout);
       res.json(dbWorkout);
     })
     .catch(err => {
