@@ -28,7 +28,8 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", {
 // App routes
 
 // GET /api/workouts: get all workouts
-app.get("/api/workouts", (req, res) => {
+// the /range part is optional
+app.get("/api/workouts(/range)?", (req, res) => {
   db.Workout.find({})
     .then(dbWorkout => {
       res.json(dbWorkout);
@@ -38,7 +39,38 @@ app.get("/api/workouts", (req, res) => {
     });
 });
 // PUT /api/workouts/id: add exercise to workout with id
+app.put("/api/workouts/:id", (req, res) => {
+  // grt workout from mongodb using id
+  db.Workout.findById(req.params.id)
+    .then(dbWorkout => {
+      //add exercise data to workout
+      dbWorkout.exercises.push(req.body);
+      dbWorkout
+        .save()
+        .then(finalWorkout => {
+          res.json(finalWorkout);
+        })
+        .catch(err => {
+          res.json(err);
+        });
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
+
 // POST /api/workouts: add new workout
+app.post("/api/workouts", (req, res) => {
+  db.Workout.create({
+    day: new Date()
+  })
+    .then(dbWorkout => {
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
 
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
